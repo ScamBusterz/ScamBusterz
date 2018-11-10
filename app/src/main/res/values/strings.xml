@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ScamBusterz</string>
+    <string name="nice_button">\"The Button\"</string>
+//    <string name="example_blocked">\"</string>
 </resources>
