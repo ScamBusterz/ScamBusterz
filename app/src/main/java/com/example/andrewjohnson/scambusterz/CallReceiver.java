@@ -13,8 +13,6 @@ import android.telephony.TelephonyManager;
 public class CallReceiver extends PhoneStateListener {
     @Override
     public void onCallStateChanged(int state, String phoneNumber) {
-
-        System.out.println("Heibqwbeqweqweq");
         super.onCallStateChanged(state, phoneNumber);
     }
 }
