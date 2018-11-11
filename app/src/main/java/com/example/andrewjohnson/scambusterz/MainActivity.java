@@ -130,15 +130,18 @@ public class MainActivity extends AppCompatActivity {
                         riskType ="It didnt work";
 
                     }
+                    boolean isRisky = (riskType.equals("RiskType"));
+                    System.out.println(isRisky);
+                    if (isRisky){
+                        notificationCall();
+
+                    }
                     System.out.println(riskType);
                 }
                 else {
                     System.out.println("innerObj was null\n");
                 }
             }
-
-
-
 
 
         });
