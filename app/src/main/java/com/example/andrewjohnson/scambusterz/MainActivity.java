@@ -12,6 +12,10 @@ import android.widget.Button;
 import android.os.Build;
 import android.app.NotificationChannel;
 
+import android.provider.CallLog;
+import android.database.Cursor;
+import android.net.Uri;
+
 public class MainActivity extends AppCompatActivity {
     private final String CHANNEL_ID = "Spam Caller";
 
@@ -25,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
                 getSystemService(Context.TELEPHONY_SERVICE);
         mTelephonyManager.listen(mCallReceiver, PhoneStateListener.LISTEN_CALL_STATE);
 
+//        ReadLog read = new ReadLog(getApplicationContext());
+        accessLogs();
+
+
         createNotificationChannel();
         Button btn = (Button) findViewById(R.id.notifyButton);
 
@@ -34,6 +42,52 @@ public class MainActivity extends AppCompatActivity {
                 notificationCall();
             }
         });
+    }
+
+    public void accessLogs(){
+        String[] projection = {
+                android.provider.CallLog.Calls.NUMBER,
+                android.provider.CallLog.Calls.TYPE,
+                android.provider.CallLog.Calls.CACHED_NAME,
+                android.provider.CallLog.Calls.CACHED_NUMBER_TYPE
+        };
+
+        String strSelection = CallLog.Calls.TYPE + "=" + CallLog.Calls.INCOMING_TYPE;
+
+        String strOrder = CallLog.Calls.DATE + "DESC";
+
+        Cursor mCallCursor = getContentResolver().query(
+            CallLog.Calls.CONTENT_URI, projection, strSelection, null, strOrder
+        );
+
+        mCallCursor.moveToFirst();
+
+//        Uri allCalls = Uri.parse("content://call_log/calls");
+//        Cursor c = getContentResolver().query(allCalls, projection, null, null, null);
+//        System.out.println(c.getString(c.getColumnIndex(CallLog.Calls.NUMBER)));
+//        c.close();
+
+//        String[] projection = {
+//                CallLog.Calls._ID,
+//                CallLog.Calls.NUMBER
+//        };
+//
+//        Cursor c = getApplicationContext().getContentResolver().query(CallLog.Calls.CONTENT_URI, projection,c., null, CallLog.Calls.DATE + "DESC");
+//
+//        if(c.getCount()>0){
+//
+//            c.moveToFirst();
+//            System.out.println("int" + Integer.toString(c.getInt(0)));
+//            do{
+//                String callerNumber = c.getString(c.getColumnIndex(CallLog.Calls.NUMBER));
+//                int callType = c.getInt(c.getColumnIndex(CallLog.Calls.TYPE));
+//
+//                if(callType == CallLog.Calls.MISSED_TYPE){
+//
+//                }
+//            }while(c.moveToNext());
+
+//        }
     }
 
     public void notificationCall(){

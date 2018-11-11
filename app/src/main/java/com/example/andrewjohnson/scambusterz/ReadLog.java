@@ -15,12 +15,12 @@ public class ReadLog {
                 CallLog.Calls.NUMBER
         };
 
-
-        Cursor c = mContext.getApplicationContext().getContentResolver().query(CallLog.Calls.CONTENT_URI, projection, null, null, CallLog.Calls.DATE + " DESC");
+        Cursor c = mContext.getApplicationContext().getContentResolver().query(CallLog.Calls.CONTENT_URI, projection,null, null, CallLog.Calls.DATE + "DESC");
 
         if(c.getCount()>0){
 
             c.moveToFirst();
+            System.out.println(c.getInt(0));
 //            do{
 //                String callerNumber = c.getString(c.getColumnIndex(CallLog.Calls.NUMBER));
 //                int callType = c.getInt(c.getColumnIndex(CallLog.Calls.TYPE));
