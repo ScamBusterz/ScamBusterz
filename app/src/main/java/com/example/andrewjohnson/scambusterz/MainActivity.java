@@ -1,15 +1,19 @@
 package com.example.andrewjohnson.scambusterz;
 
-import android.content.IntentFilter;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.telephony.TelephonyManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.telecom.Call;
-import android.util.Log;
+import android.net.ConnectivityManager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.content.IntentFilter;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 
-
+import com.example.andrewjohnson.scambusterz.CallReceiver;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,21 +22,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        try{
-            String imei = tm.getDeviceId();
-            System.out.println(imei);
-        }
-        catch(Exception e){
-            System.out.println("error");
-        }
+        CallReceiver mCallReceiver = new CallReceiver();
+        TelephonyManager mTelephonyManager = (TelephonyManager)
+                getSystemService(Context.TELEPHONY_SERVICE);
+        mTelephonyManager.listen(mCallReceiver, PhoneStateListener.LISTEN_CALL_STATE);
 
-
-
-//        CallReceiver cRec = new CallReceiver();
-//        String ACTION = "com.example.andrewjohnson.scambusterz.CallReceiver";
-//
-//        IntentFilter intentFilter = new IntentFilter(ACTION);
-//        this.registerReceiver(cRec, intentFilter);
     }
 }
