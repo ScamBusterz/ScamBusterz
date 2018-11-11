@@ -5,18 +5,34 @@ import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.os.Build;
 import android.app.NotificationChannel;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
 public class MainActivity extends AppCompatActivity {
     private final String CHANNEL_ID = "Spam Caller";
+
+    // API call
+    private OkHttpClient okHttpClient;
+    private Request request;
+    private String urlFirst = "https://proapi.whitepages.com/3.0/phone_reputation?phone=";
+    private String urlLast = "&api_key=27b32d68aa1142948d336ef2b3cae8cf";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        apiCall("9991110003");
         createNotificationChannel();
         Button btn = (Button) findViewById(R.id.notifyButton);
 
@@ -51,6 +67,25 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    private void apiCall(String phoneNumber){
+        okHttpClient = new OkHttpClient();
+        String url = urlFirst + phoneNumber + urlLast;
+        request = new Request.Builder().url(url).build();
+
+        String jsonResponse = "Nothing";
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                System.out.println( response.body().string());
+            }
+        });
     }
 
 }
