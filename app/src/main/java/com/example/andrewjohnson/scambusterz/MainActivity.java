@@ -1,10 +1,13 @@
 package com.example.andrewjohnson.scambusterz;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
     private final String CHANNEL_ID = "Spam Caller";
@@ -14,16 +17,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button btn = (Button) findViewById(R.id.notifyButton);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notificationCall();
+            }
+        });
     }
 
-    public void displayNotification( View view){
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_priority_high_notification);
-        builder.setContentTitle("SPAM CALLER");
-        builder.setContentText("This phone number has a high likelihood of being spam");
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+    public void notificationCall(){
+        NotificationCompat.Builder notificationBuilder =  new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_priority_high_notification)
+                .setContentTitle("SPAM CALLER")
+                .setContentText("This phone number has a high likelihood of being spam")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notificationBuilder.build());
     }
+
 }
