@@ -16,7 +16,7 @@ public class CallReceiver extends PhoneStateListener {
     @Override
     public void onCallStateChanged(int state, String phoneNumber) {
 
-        System.out.println("Heibqwbeqweqweq");
+        System.out.println("phone" + phoneNumber);
         super.onCallStateChanged(state, phoneNumber);
 
     }

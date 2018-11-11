@@ -27,5 +27,12 @@ public class MainActivity extends AppCompatActivity {
                 getSystemService(Context.TELEPHONY_SERVICE);
         mTelephonyManager.listen(mCallReceiver, PhoneStateListener.LISTEN_CALL_STATE);
 
+        if(mTelephonyManager.hasCarrierPrivileges()){
+            System.out.println("yes") ;
+        }
+        else{
+            System.out.println("no");
+        }
+
     }
 }
