@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        CallReceiver callreceiv = new CallReceiver();
+        CallReceiver mCallReceiver = new CallReceiver();
         TelephonyManager mTelephonyManager = (TelephonyManager)
                 getSystemService(Context.TELEPHONY_SERVICE);
-        mTelephonyManager.listen(callreceiv, PhoneStateListener.LISTEN_CALL_STATE);
+        mTelephonyManager.listen(mCallReceiver, PhoneStateListener.LISTEN_CALL_STATE);
     }
 }
