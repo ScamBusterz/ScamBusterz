@@ -7,6 +7,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.app.NotificationManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.os.Build;
@@ -15,9 +16,22 @@ import android.app.NotificationChannel;
 import android.provider.CallLog;
 import android.database.Cursor;
 import android.net.Uri;
+import android.Manifest;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
+import android.content.pm.PackageManager;
+import android.app.Activity;
+
 
 public class MainActivity extends AppCompatActivity {
     private final String CHANNEL_ID = "Spam Caller";
+
+    private static final int REQUEST_RUNTIME_PERMISSION = 123;
+    String[] permissons = {Manifest.permission.READ_CONTACTS,
+            Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_CALL_LOG};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +43,32 @@ public class MainActivity extends AppCompatActivity {
                 getSystemService(Context.TELEPHONY_SERVICE);
         mTelephonyManager.listen(mCallReceiver, PhoneStateListener.LISTEN_CALL_STATE);
 
+        //Check permissions
+
+//        final String[] NECESSARY_PERMISSIONS = new String[] {Manifest.permission.GET_ACCOUNTS };
+//
+//        if (ContextCompat.checkSelfPermission(MainActivity.this,
+//                Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED) {
+//
+//            //Permission is granted
+//
+//        } else {
+//
+//            //ask for permission
+//
+//            ActivityCompat.requestPermissions(
+//                    MainActivity.this,
+//                    NECESSARY_PERMISSIONS, 123);
+//        }
 //        ReadLog read = new ReadLog(getApplicationContext());
-        accessLogs();
+        if (CheckPermission(MainActivity.this, permissons[0])) {
+            // you have permission go ahead
+            accessLogs();
+        } else {
+            // you do not have permission go request runtime permissions
+            RequestPermission(MainActivity.this, permissons, REQUEST_RUNTIME_PERMISSION);
+        }
+
 
 
         createNotificationChannel();
@@ -45,27 +83,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void accessLogs(){
+
         String[] projection = {
                 android.provider.CallLog.Calls.NUMBER,
-                android.provider.CallLog.Calls.TYPE,
-                android.provider.CallLog.Calls.CACHED_NAME,
-                android.provider.CallLog.Calls.CACHED_NUMBER_TYPE
         };
+//
+//        String strSelection = CallLog.Calls.TYPE + "=" + CallLog.Calls.INCOMING_TYPE;
+//
+//        String strOrder = CallLog.Calls.DATE + "DESC";
+//
+//        Cursor mCallCursor = getContentResolver().query(
+//            CallLog.Calls.CONTENT_URI, projection, strSelection, null, strOrder
+//        );
+//
+//        mCallCursor.moveToFirst();
 
-        String strSelection = CallLog.Calls.TYPE + "=" + CallLog.Calls.INCOMING_TYPE;
-
+        Uri allCalls = Uri.parse("content://call_log/calls");
         String strOrder = CallLog.Calls.DATE + "DESC";
 
-        Cursor mCallCursor = getContentResolver().query(
-            CallLog.Calls.CONTENT_URI, projection, strSelection, null, strOrder
-        );
+        Cursor c = getContentResolver().query(allCalls,projection, null, null, CallLog.Calls.DATE + "DESC");
+        while(c.moveToNext()){
+            String callNumber = c.getString(c
+                    .getColumnIndex(android.provider.CallLog.Calls.NUMBER));
+            Log.d("NUMBER", callNumber);
+        }
 
-        mCallCursor.moveToFirst();
-
-//        Uri allCalls = Uri.parse("content://call_log/calls");
-//        Cursor c = getContentResolver().query(allCalls, projection, null, null, null);
-//        System.out.println(c.getString(c.getColumnIndex(CallLog.Calls.NUMBER)));
-//        c.close();
 
 //        String[] projection = {
 //                CallLog.Calls._ID,
@@ -88,6 +130,45 @@ public class MainActivity extends AppCompatActivity {
 //            }while(c.moveToNext());
 
 //        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults) {
+        switch (permsRequestCode) {
+
+            case REQUEST_RUNTIME_PERMISSION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // you have permission go ahead
+                    accessLogs();
+                } else {
+                    // you do not have permission show toast.
+                }
+                return;
+            }
+        }
+    }
+
+    public void RequestPermission(Activity thisActivity, String[] Permission, int Code) {
+        if (ContextCompat.checkSelfPermission(thisActivity,
+                Permission[0])
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(thisActivity,
+                    Permission[0])) {
+            } else {
+                ActivityCompat.requestPermissions(thisActivity, Permission,
+                        Code);
+            }
+        }
+    }
+
+    public boolean CheckPermission(Context context, String Permission) {
+        if (ContextCompat.checkSelfPermission(context,
+                Permission) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void notificationCall(){
